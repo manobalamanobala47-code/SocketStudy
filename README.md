@@ -54,43 +54,30 @@ Socket programming finds applications in various domains, including web developm
 5.	RPC mechanisms: which allow processes to execute code on a remote server, often use socket programming for communication.
 
 ## Program:
-server.py
-import socket             
-s = socket.socket()         
-print ("Socket successfully created")
-port = 12345                
-s.bind(('127.0.0.1', port))         
-print ("socket binded to %s" %(port)) 
-s.listen(5)     
-print ("socket is listening")            
-while True: 
-  c, addr = s.accept()   
-  print ('Got connection from', addr )
-  c.send('Thank you for connecting'.encode()) 
-c.close()
-
 client.py
 import socket
-c = socket.socket()
-host = '127.0.0.1'   
-port = 12345
-c.connect((host, port))
-print("Connected to server")
-while True:
-    msg = input("Client: ")
-    c.send(msg.encode())
-    if msg.lower() == "bye":
-        break
-    server_reply = c.recv(1024).decode()
-    print(server_reply)
+from datetime import datetime
+s=socket.socket()
+s.bind(('localhost',8000))
+s.listen(5)
+c,addr=s.accept()
+print("Client Address : ",addr)
+now = datetime.now()
+c.send(now.strftime("%d/%m/%Y %H:%M:%S").encode())
+ack=c.recv(1024).decode()
+if ack:
+print(ack)
 c.close()
 
-## Output:
-server
-<img width="869" height="326" alt="image" src="https://github.com/user-attachments/assets/57c82680-ffae-459f-aaf9-1d727af6cf57" />
 
-client
-<img width="756" height="338" alt="image" src="https://github.com/user-attachments/assets/74931f43-bb98-440e-ad1b-d908bc602f5e" />
+server.py
+import socket
+s=socket.socket()
+s.connect(('localhost',8000))
+print(s.getsockname())
+print(s.recv(1024).decode())
+s.send("acknowledgement recived from the server".encode())
+
 
 
 
